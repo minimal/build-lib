@@ -5,21 +5,22 @@ module Lib
     ( someFunc
     ) where
 
-import Data.Yaml
+import qualified Data.Yaml as Yaml
+import Data.Yaml ((.:), (.:?))
 import Control.Monad (mzero)
 import qualified Data.ByteString.Char8 as BS
 
 data Build = Build { language :: String
-                   , install :: [String]}
+                   , install :: [String]
+                   , blurb :: Maybe String}
              deriving (Show)
 
 
-instance FromJSON Build where
-    parseJSON (Object v) = Build <$>
-                           -- v .: "id" <*>
-                           v .: "language" <*>
-                           v .: "install"
-    -- A non-Object value is of the wrong type, so fail.
+instance Yaml.FromJSON Build where
+    parseJSON (Yaml.Object v) = Build <$>
+                                v .: "language" <*>
+                                v .: "install" <*>
+                                v .:? "blurb"
     parseJSON _ = mzero
 
 
@@ -35,7 +36,7 @@ moo buildDesc = show buildDesc --(map (\r -> (language r, install r)) buildDesc)
 someFunc :: IO ()
 someFunc =
     do
-      d <- (Data.Yaml.decodeEither <$> (getYaml "build.yml"))
+      d <- (Yaml.decodeEither <$> (getYaml "build.yml"))
       case d of
         Left err -> print $ strErr err
         Right ps -> print $ moo ps
