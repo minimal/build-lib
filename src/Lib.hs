@@ -5,14 +5,14 @@ module Lib
     ( someFunc
     ) where
 
-import qualified Data.Yaml as Yaml
-import Data.Yaml ((.:), (.:?))
-import Control.Monad (mzero)
+import           Control.Monad         (mzero)
 import qualified Data.ByteString.Char8 as BS
+import           Data.Yaml             ((.:), (.:?))
+import qualified Data.Yaml             as Yaml
 
 data Build = Build { language :: String
-                   , install :: [String]
-                   , blurb :: Maybe String}
+                   , install  :: [String]
+                   , blurb    :: Maybe String}
              deriving (Show)
 
 
