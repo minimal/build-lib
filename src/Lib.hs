@@ -8,7 +8,7 @@ module Lib
 import           Control.Monad         (mzero)
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.Text             as Text
-import           Data.Yaml             ((.:), (.:?))
+import           Data.Yaml             ((.:), (.:?), FromJSON)
 import qualified Data.Yaml             as Yaml
 import           Turtle                (shell, (<>))
 import qualified Turtle                as T
@@ -19,7 +19,7 @@ data Build = Build { language :: String
              deriving (Show)
 
 
-instance Yaml.FromJSON Build where
+instance FromJSON Build where
     parseJSON (Yaml.Object v) = Build <$>
                                 v .: "language" <*>
                                 v .: "install" <*>
@@ -30,7 +30,9 @@ instance Yaml.FromJSON Build where
 getYaml :: FilePath -> IO BS.ByteString
 getYaml = BS.readFile
 
+runCmd :: T.Text -> IO ()
 runCmd cmd = do
+  print ("Running: " <> cmd)
   res <- shell cmd T.empty
   case res of
     T.ExitSuccess -> return ()
