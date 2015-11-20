@@ -1,31 +1,24 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveAnyClass      #-}
+{-# LANGUAGE DeriveGeneric       #-}
+{-# LANGUAGE OverloadedStrings   #-}
 -- https://github.com/Gabriel439/post-rfc/blob/master/sotu.md#scripting--command-line-applications
 
 module Lib
     ( someFunc
     ) where
 
-import           Control.Monad         (mzero)
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.Text             as Text
-import           Data.Yaml             ((.:), (.:?), FromJSON)
+import           Data.Yaml             (FromJSON)
 import qualified Data.Yaml             as Yaml
+import           GHC.Generics          (Generic)
 import           Turtle                (shell, (<>))
 import qualified Turtle                as T
 
 data Build = Build { language :: String
                    , install  :: [T.Text]
                    , blurb    :: Maybe String}
-             deriving (Show)
-
-
-instance FromJSON Build where
-    parseJSON (Yaml.Object v) = Build <$>
-                                v .: "language" <*>
-                                v .: "install" <*>
-                                v .:? "blurb"
-    parseJSON _ = mzero
-
+             deriving (Show, Generic, FromJSON)
 
 getYaml :: FilePath -> IO BS.ByteString
 getYaml = BS.readFile
